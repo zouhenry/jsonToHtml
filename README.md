@@ -1,5 +1,7 @@
 # json-html-report
 
+DEMO: https://json-html-reporter.herokuapp.com/
+
 ## Project setup
 ```
 yarn install

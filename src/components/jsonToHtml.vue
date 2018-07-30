@@ -202,7 +202,6 @@
   import Transformer from './transformer'
   import thWTooltip from './thWTooltip'
   import LinkTooltip from "./linkTooltip";
-  import data from './data.json';
 
   export default {
     name: 'HelloWorld',
@@ -217,7 +216,7 @@
         processed: true,
         path: '',
         htmlSourceCode: '',
-        source: JSON.stringify(data, null, 2),
+        source: '',
         config: JSON.parse(window.localStorage.getItem('jsonHtmlReport') || '{}')
       }
     },

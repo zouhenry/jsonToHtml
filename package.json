@@ -1,7 +1,7 @@
 {
   "name": "json-html-report",
   "description": "https://json-html-reporter.herokuapp.com/",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": false,
   "scripts": {
     "start": "npm build && node server",

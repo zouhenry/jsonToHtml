@@ -5,9 +5,12 @@
             <div slot="trigger" class="panel-heading">
                 <strong>JSON Code</strong>
             </div>
-            <div class="panel-block">
-                <b-field class="full-width" label="JSON Object to transform">
+            <div class="panel-block" style="align-items: start">
+                <b-field class="full-width" style="padding:0.5rem;" label="JSON Object to transform">
                     <textarea class="textarea" rows="20" type="textarea" v-model="source"></textarea>
+                </b-field>
+                <b-field class="full-width" style="padding:0.5rem;" label="RESULT">
+                    <textarea disabled="true" class="textarea" rows="20" type="textarea" v-model="resultJson"></textarea>
                 </b-field>
             </div>
         </b-collapse>
@@ -250,6 +253,9 @@
       },
       sourceCode() {
         return pretty(`<!DOCTYPE html><html lang="en"><body>${this.htmlSourceCode}</body></html>`);
+      },
+      resultJson(){
+        return JSON.stringify(this.json, null, 2);
       },
       json() {
         if (this.source == '') return [];

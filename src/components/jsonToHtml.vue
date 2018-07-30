@@ -15,15 +15,28 @@
         <b-collapse class="panel" :open.sync="isConfigOpen">
             <div slot="trigger" class="panel-heading">
                 <strong>Configuration</strong>
+                &nbsp;
                 <span class="control">
-                    ( <a @click.prevent.stop="saveConfig"><span>
-                    <b-icon icon="content-save" size="is-small"></b-icon>
-                    Save Config</span></a> )
+                    <a @click.prevent.stop="saveConfig">
+                        <b-tooltip label="Save to disk">
+                            <b-icon icon="content-save"/>
+                        </b-tooltip>
+                    </a>
                 </span>
-                ( <b-upload v-model="file">
-                    <b-icon icon="folder-upload" size="is-small"></b-icon>
-                    <a><span>Upload Config</span></a>
-                </b-upload> )
+
+                <b-upload v-model="file">
+                    <link-tooltip tooltip="Upload config"
+                                  icon="folder-upload">
+                    </link-tooltip>
+                </b-upload>
+
+                <span class="control">
+                    <a @click.prevent.stop="clearConfig">
+                        <b-tooltip label="Start a new config">
+                            <b-icon icon="close"/>
+                        </b-tooltip>
+                    </a>
+                </span>
             </div>
 
             <b-field label="Path to the base array">
@@ -44,31 +57,27 @@
                     <table class="full-width has-input table is-striped has-mobile-cards is-hoverable">
                         <thead>
                         <tr>
-                            <th style="width:25%">Path
-                                <b-tooltip
-                                        label="Object path from the base object: used by _.get()">
-                                    <a>
-                                        <b-icon icon="information-outline" size="is-small"/>
-                                    </a>
-                                </b-tooltip>
+                            <th is="thWTooltip"
+                                style="width:25%"
+                                label="Path"
+                                tooltip="Object path from the base object: used by _.get()"
+                                icon="information-outline">
                             </th>
-                            <th style="width:20%">Method
-                                <b-tooltip
-                                        label="Compatible with lodash's methods. See: https://lodash.com/docs/4.17.10">
-                                    <a>
-                                        <b-icon icon="information-outline" size="is-small"/>
-                                    </a>
-                                </b-tooltip>
+
+                            <th is="thWTooltip"
+                                style="width:20%"
+                                label="Method"
+                                tooltip="Compatible with lodash's methods. See: https://lodash.com/docs/4.17.10"
+                                icon="information-outline">
                             </th>
-                            <th>Params
-                                <b-tooltip
-                                        label="takes value or function. e.g. 'type' or function(item) {item.name === 'filtered'})">
-                                    <a>
-                                        <b-icon icon="information-outline" size="is-small"/>
-                                    </a>
-                                </b-tooltip>
+
+                            <th is="thWTooltip"
+                                label="Params"
+                                tooltip="takes value or function. e.g. 'type' or function(item) {item.name === 'filtered'})"
+                                icon="information-outline">
                             </th>
-                            <th></th>
+
+                            <th width="125px"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -97,27 +106,26 @@
                     <table class="full-width has-input table is-striped has-mobile-cards is-hoverable">
                         <thead>
                         <tr>
-                            <th>Path
-                                <b-tooltip
-                                        label="Object path fro the base object: used by _.get()">
-                                    <a>
-                                        <b-icon icon="information-outline" size="is-small"/>
-                                    </a>
-                                </b-tooltip>
+                            <th is="thWTooltip"
+                                label="Path"
+                                tooltip="Object path from the base object: used by _.get()"
+                                icon="information-outline">
                             </th>
-                            <th>Table Header
-                                <b-tooltip label="Table header to display">
-                                    <a>
-                                        <b-icon icon="information-outline" size="is-small"/>
-                                    </a>
-                                </b-tooltip>
+
+                            <th is="thWTooltip"
+                                label="Table Header"
+                                tooltip="Table header to display"
+                                icon="information-outline">
                             </th>
-                            <th></th>
+
+                            <th width="125px"></th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr is="mapping" v-for="(mapping, index) in config.mappings"
                             @deleteMapping="deleteMapping"
+                            @moveUp="moveMappingUp"
+                            @moveDown="moveMappingDown"
                             :mapping="mapping"
                             :key="index"
                             style="min-height:30px">
@@ -136,14 +144,14 @@
                 <table class="full-width table is-striped has-mobile-cards is-hoverable">
                     <thead>
                     <tr>
-                        <th v-for="(mapping, index) in config.mappings" :key="index">
+                        <th v-for="(mapping, index) in enabledMappings" :key="index">
                             {{mapping.html}}
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="(row, index) in json" :key="index">
-                        <td v-for="(mapping, index) in config.mappings" :key="index">
+                        <td v-for="(mapping, index) in enabledMappings" :key="index" :title="getVal(row, mapping)">
                             {{getVal(row, mapping)}}
                         </td>
                     </tr>
@@ -154,13 +162,21 @@
 
         <b-collapse class="panel" :open.sync="isSourceCodeOpen">
             <div slot="trigger" class="panel-heading">
-                <strong>SOURCE CODE</strong>&nbsp;( <a href="#" @click.stop.prevent="copySource">
-                <b-icon icon="content-copy" size="is-small"></b-icon>
-                copy</a> )
+                <strong>SOURCE CODE</strong>
+                &nbsp;
                 <span class="control">
-                    ( <a @click.prevent.stop="saveHtml"><span>
-                    <b-icon icon="content-save" size="is-small"></b-icon>
-                    Save Page</span></a> )
+                    <a @click.prevent.stop="copySource">
+                        <b-tooltip label="Copy to clipboard">
+                            <b-icon icon="content-copy"/>
+                        </b-tooltip>
+                    </a>
+                </span>
+                <span class="control">
+                    <a @click.prevent.stop="saveHtml">
+                        <b-tooltip label="SaveAs HTML page">
+                            <b-icon icon="content-save"/>
+                        </b-tooltip>
+                    </a>
                 </span>
             </div>
             <div class="panel-block">
@@ -181,10 +197,12 @@
   import FileSaver from 'file-saver'
   import Mapping from './mapping'
   import Transformer from './transformer'
+  import thWTooltip from './thWTooltip'
+  import LinkTooltip from "./linkTooltip";
 
   export default {
     name: 'HelloWorld',
-    components: {Transformer,Mapping},
+    components: {LinkTooltip, Transformer, Mapping, thWTooltip},
     data() {
       return {
         file: [],
@@ -226,6 +244,9 @@
       _() {
         return _;
       },
+      enabledMappings(){
+        return _.filter(this.config.mappings, (mapping)=>!mapping.disabled);
+      },
       sourceCode() {
         return pretty(`<!DOCTYPE html><html lang="en"><body>${this.htmlSourceCode}</body></html>`);
       },
@@ -262,25 +283,42 @@
       }
     },
     methods: {
+      clearConfig(){
+        this.config = {
+          transformers: [],
+          mappings: []
+        }
+      },
       moveUp(transformer) {
-        let index = this.getRowIndex(transformer);
+        let index = _.indexOf(this.config.transformers, transformer);
         let item = this.config.transformers[index];
         this.config.transformers.splice(index, 1);
         this.config.transformers.splice(index - 1, 0, item);
         this.$toast.open({message: 'Transformer moved!', type: 'is-success'})
       },
       moveDown(transformer) {
-        let index = this.getRowIndex(transformer)
+        let index = _.indexOf(this.config.transformers, transformer);
         let item = this.config.transformers[index];
         this.config.transformers.splice(index, 1);
         this.config.transformers.splice(index + 1, 0, item);
         this.$toast.open({message: 'Transformer moved!', type: 'is-success'})
       },
-      getRowIndex(transformer) {
-        return _.indexOf(this.config.transformers, transformer);
+      moveMappingUp(mapping) {
+        let index = _.indexOf(this.config.mappings, mapping);
+        let item = this.config.mappings[index];
+        this.config.mappings.splice(index, 1);
+        this.config.mappings.splice(index - 1, 0, item);
+        this.$toast.open({message: 'Mapping moved!', type: 'is-success'})
+      },
+      moveMappingDown(mapping) {
+        let index = _.indexOf(this.config.mappings, mapping);
+        let item = this.config.mappings[index];
+        this.config.mappings.splice(index, 1);
+        this.config.mappings.splice(index + 1, 0, item);
+        this.$toast.open({message: 'Mapping moved!', type: 'is-success'})
       },
       deleteTransformer(transformer) {
-        let index = this.getRowIndex(transformer);
+        let index = _.indexOf(this.config.transformers, transformer);
         this.config.transformers.splice(index, 1);
         this.$toast.open({message: 'Transformer deleted!', type: 'is-success'})
       },

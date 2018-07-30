@@ -199,6 +199,7 @@
   import Transformer from './transformer'
   import thWTooltip from './thWTooltip'
   import LinkTooltip from "./linkTooltip";
+  import data from './data.json';
 
   export default {
     name: 'HelloWorld',
@@ -213,7 +214,7 @@
         processed: true,
         path: '',
         htmlSourceCode: '',
-        source: '',
+        source: JSON.stringify(data, null, 2),
         config: JSON.parse(window.localStorage.getItem('jsonHtmlReport') || '{}')
       }
     },
@@ -244,8 +245,8 @@
       _() {
         return _;
       },
-      enabledMappings(){
-        return _.filter(this.config.mappings, (mapping)=>!mapping.disabled);
+      enabledMappings() {
+        return _.filter(this.config.mappings, (mapping) => !mapping.disabled);
       },
       sourceCode() {
         return pretty(`<!DOCTYPE html><html lang="en"><body>${this.htmlSourceCode}</body></html>`);
@@ -258,24 +259,53 @@
         _.each(this.config.transformers, (transformer) => {
 
           let value = source;
+          let pathParts = transformer.path.split('=>');
+          let path = pathParts[0];
+          let dest = pathParts[1] || pathParts[0];
+
           if (transformer.method && transformer.params && !transformer.disabled) {
-            _.each(source, (item, rowIndex) => {
-              value = _.get(item, transformer.path);
+
+            if (path.endsWith('.')) {
+              path = path.substring(0, path.length - 1);
+              value = path ? _.get(source, path) : source;
               let predicate;
               try {
                 eval('predicate = ' + transformer.params);
 
                 if (transformer.method === 'set') {
-                  value = _.isFunction(predicate) ? predicate(value, item, rowIndex) : predicate;
+                  value = _.isFunction(predicate) ? predicate(value, source) : predicate;
                 } else {
                   value = _[transformer.method](value, predicate);
                 }
-                _.set(item, transformer.path, value);
+
+                if (dest.endsWith('.')) {
+                  dest = dest.substring(0, dest.length - 1);
+                }
+                dest ? _.set(source, dest, value) : (source = value);
               } catch (e) {
                 //ignore
               }
-            });
+            } else {
+
+              _.each(source, (item, key, rowIndex) => {
+                value = _.get(item, path);
+                let predicate;
+                try {
+                  eval('predicate = ' + transformer.params);
+
+                  if (transformer.method === 'set') {
+                    value = _.isFunction(predicate) ? predicate(value, item, rowIndex) : predicate;
+                  } else {
+                    value = _[transformer.method](value, predicate);
+                  }
+                  _.set(item, dest, value);
+                } catch (e) {
+                  //ignore
+                }
+              });
+            }
           }
+
           return value;
 
         });
@@ -283,7 +313,7 @@
       }
     },
     methods: {
-      clearConfig(){
+      clearConfig() {
         this.config = {
           transformers: [],
           mappings: []

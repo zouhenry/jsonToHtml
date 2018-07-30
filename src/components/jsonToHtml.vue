@@ -176,7 +176,6 @@
 </template>
 
 <script>
-  import data from './data.json'
   import _ from 'lodash';
   import pretty from 'pretty';
   import FileSaver from 'file-saver'
@@ -196,7 +195,7 @@
         processed: true,
         path: '',
         htmlSourceCode: '',
-        source: JSON.stringify(data, null, 2),
+        source: '',
         config: JSON.parse(window.localStorage.getItem('jsonHtmlReport') || '{}')
       }
     },

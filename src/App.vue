@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <JsonToHtml />
   </div>
 </template>
 
@@ -10,7 +10,7 @@ import JsonToHtml from './components/jsonToHtml'
 export default {
   name: 'app',
   components: {
-    HelloWorld: JsonToHtml
+    JsonToHtml: JsonToHtml
   }
 }
 </script>

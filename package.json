@@ -1,5 +1,6 @@
 {
   "name": "json-html-report",
+  "description": "https://json-html-reporter.herokuapp.com/",
   "version": "0.1.0",
   "private": false,
   "scripts": {

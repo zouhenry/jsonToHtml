@@ -381,7 +381,7 @@
         if (_.isArray(val)) {
           return val.join(', ');
         } else if (_.isObject(val)) {
-          return JSON.stringify(val, 2);
+          return JSON.stringify(val, null, 2);
         } else {
           return val;
         }

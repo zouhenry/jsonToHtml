@@ -377,7 +377,14 @@
         this.$toast.open({message: 'Source code copied to clipboard!', type: 'is-success'})
       },
       getVal(row, mapping) {
-        return _.get(row, mapping.source);
+        let val = _.get(row, mapping.source);
+        if (_.isArray(val)) {
+          return val.join(', ');
+        } else if (_.isObject(val)) {
+          return JSON.stringify(val, 2);
+        } else {
+          return val;
+        }
       },
       addMapper() {
         this.config.mappings.push({source: '', html: ''});
